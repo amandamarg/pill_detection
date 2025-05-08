@@ -26,9 +26,9 @@ class _Const(object):
     root_mapping = {
         "Amanda": {
             "STORAGE_ROOT":
-                "./storage2/VISAPP2024",
+                "./storage/VISAPP2024",
             "DATASET_ROOT":
-                "./storage2/VISAPP2024/datasets",
+                "./storage/VISAPP2024/datasets",
             "PROJECT_ROOT":
                 "/Users/Amanda/pill_detection_cloned/pill_detection",
         }

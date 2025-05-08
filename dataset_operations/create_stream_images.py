@@ -306,13 +306,8 @@ class CreateStreamImages:
         """
 
         files_rgb = os.listdir(rgb_path)
-        files_contour = os.listdir(contour_path)
-        files_texture = os.listdir(texture_path)
-        files_lbp = os.listdir(lbp_path)
-
-        for idx, (file_rgb, file_contour, file_texture, file_lbp) in \
-                tqdm(enumerate(zip(files_rgb, files_contour, files_texture, files_lbp)), desc="Copying image files"):
-
+        for idx, file_rgb in \
+                tqdm(enumerate(files_rgb), desc="Copying image files"):
             if "_s_" in file_rgb:
                 match = re.search(r'^(.*?)_s_\d{3}\.jpg$', file_rgb)
             elif "_u_" in file_rgb:
@@ -324,7 +319,7 @@ class CreateStreamImages:
                 value = match.group(1)
             else:
                 raise ValueError(f"Wrong file name: {file_rgb}")
-
+            
             out_path_rgb = os.path.join(rgb_path, value)
             out_path_contour = os.path.join(contour_path, value)
             out_path_texture = os.path.join(texture_path, value)
@@ -337,11 +332,14 @@ class CreateStreamImages:
 
             try:
                 shutil.move(os.path.join(rgb_path, file_rgb), out_path_rgb)
-                shutil.move(os.path.join(contour_path, file_contour), out_path_contour)
-                shutil.move(os.path.join(texture_path, file_texture), out_path_texture)
-                shutil.move(os.path.join(lbp_path, file_lbp), out_path_lbp)
+                shutil.move(os.path.join(contour_path, "contour_" + file_rgb), out_path_contour)
+                shutil.move(os.path.join(texture_path, "texture_" + file_rgb), out_path_texture)
+                shutil.move(os.path.join(lbp_path, "lbp_" + file_rgb), out_path_lbp)
             except shutil.Error as se:
                 logging.error(f"Error moving file: {se.args[0]}")
+            
+
+            
 
     # ------------------------------------------------------------------------------------------------------------------
     # ----------------------------------------------------- M A I N ----------------------------------------------------
