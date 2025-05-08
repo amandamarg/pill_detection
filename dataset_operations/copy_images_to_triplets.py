@@ -6,8 +6,8 @@ from config.dataset_paths_selector import dataset_images_path_selector
 
 random.seed(42)
 
-src_path = dataset_images_path_selector("ogyei").get("src_stream_images").get("reference").get("stream_images_contour")
-dst_path = dataset_images_path_selector("ogyei").get("dst_stream_images").get("ref")
+src_path = dataset_images_path_selector("ogyeiv2").get("src_stream_images").get("reference").get("stream_images_contour")
+dst_path = dataset_images_path_selector("ogyeiv2").get("dst_stream_images").get("ref")
 dst_path = os.path.join(dst_path, "contour")
 
 pill_classes = []

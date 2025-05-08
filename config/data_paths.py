@@ -10,7 +10,7 @@ other classes are inherited from that (Images, Data, Dataset).
 
 import logging
 import os
-
+import getpass
 from utils.utils import setup_logger
 
 
@@ -22,15 +22,15 @@ class _Const(object):
     setup_logger()
 
     # Select user and according paths
-    user = os.getlogin()
+    user = getpass.getuser()
     root_mapping = {
-        "ricsi": {
+        "Amanda": {
             "STORAGE_ROOT":
-                "D:/storage/pill_detection/VISAPP2024",
+                "./storage2/VISAPP2024",
             "DATASET_ROOT":
-                "D:/storage/pill_detection/VISAPP2024/datasets",
+                "./storage2/VISAPP2024/datasets",
             "PROJECT_ROOT":
-                "C:/Users/ricsi/Documents/project/IVM",
+                "/Users/Amanda/pill_detection_cloned/pill_detection",
         }
     }
 

@@ -37,7 +37,6 @@ class KFoldSort:
              A dictionary where keys are fold names (fold1, fold2, ..., fold_{num_folds}) and values are lists of
         class names.
         """
-
         if not load:
             timestamp = create_timestamp()
             data_list = (
@@ -197,7 +196,7 @@ class KFoldSort:
 if __name__ == "__main__":
     k_fold_sort = (
         KFoldSort(
-            load_folds=True,
+            load_folds=False,
             erase=True
         )
     )

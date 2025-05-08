@@ -91,7 +91,7 @@ def display_annotations(image_path: str, annotation_path: str, out_path: str):
 
 
 if __name__ == "__main__":
-    img_path = "path/to/images"
-    ann_path = "path/to/yolo/annotations"
-    out_path = "path/to/save/directory"
+    img_path = "/Users/Amanda/pill_detection_cloned/pill_detection/storage/VISAPP2024/datasets/ogyei_v2/unsplitted/images"
+    ann_path = "/Users/Amanda/pill_detection_cloned/pill_detection/storage/VISAPP2024/datasets/ogyei_v2/unsplitted/labels"
+    out_path = "/Users/Amanda/pill_detection_cloned/pill_detection/storage/VISAPP2024/datasets/ogyei_v2/unsplitted/gt_masks"
     display_annotations(img_path, ann_path, out_path)

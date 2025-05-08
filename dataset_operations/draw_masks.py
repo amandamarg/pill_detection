@@ -61,6 +61,12 @@ def path_selector(operation: str) -> dict:
             "labels": dataset_images_path_selector(dataset_type).get(operation).get("reference_segmentation_labels"),
             "masks": dataset_images_path_selector(dataset_type).get(operation).get("reference_mask_images")
         }
+    # elif operation.lower() in ["train", "valid", "test"]:
+    #     path_to_images = {
+    #         "images": dataset_images_path_selector(dataset_type).get(operation).get("images"),
+    #         "labels": dataset_images_path_selector(dataset_type).get(operation).get("segmentation_labels"),
+    #         "masks": dataset_images_path_selector(dataset_type).get(operation).get("mask_images")
+    #     }
     else:
         raise ValueError("Wrong operation!")
 
@@ -218,6 +224,7 @@ def main(operation: str = "train", batch_size: int = 10) -> None:
 if __name__ == "__main__":
     try:
         operations = ["reference", "customer"]
+        # operations = ["train", "test", "valid"]
         for op in operations:
             main(operation=op)
     except KeyboardInterrupt as kie:

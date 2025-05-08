@@ -12,8 +12,8 @@ from utils.utils import file_reader
 def main(operation="reference"):
     random.seed(42)
 
-    src_imgs = dataset_images_path_selector("ogyei").get("unsplitted").get("images")
-    src_labels = dataset_images_path_selector("ogyei").get("unsplitted").get("segmentation_labels")
+    src_imgs = dataset_images_path_selector("ogyeiv2").get("unsplitted").get("images")
+    src_labels = dataset_images_path_selector("ogyeiv2").get("unsplitted").get("segmentation_labels")
 
     images = (
         "customer_images" if operation == "customer"
@@ -33,17 +33,18 @@ def main(operation="reference"):
               else None)
     )
 
-    dst_imgs = dataset_images_path_selector("ogyei").get(operation).get(images)
-    dst_masks = dataset_images_path_selector("ogyei").get(operation).get(masks)
-    dst_labels = dataset_images_path_selector("ogyei").get(operation).get(labels)
+    dst_imgs = dataset_images_path_selector("ogyeiv2").get(operation).get(images)
+    dst_masks = dataset_images_path_selector("ogyeiv2").get(operation).get(masks)
+    dst_labels = dataset_images_path_selector("ogyeiv2").get(operation).get(labels)
 
-    src_img_files = file_reader(src_imgs, "png")
+    src_img_files = file_reader(src_imgs, "jpg")
 
     pill_files = {}
 
     for f in src_img_files:
         filename = os.path.basename(f)
-        match = re.search(r'id_\d+_(.+?)_\d+\.png', filename)
+        # match = re.search(r'id_\d+_(.+?)_\d+\.jpg', filename)
+        match = re.search(r'(.+)_(s|u)_\d+\.jpg', filename)
         if match:
             pill_name = match.group(1)
             if pill_name not in pill_files:
@@ -63,7 +64,7 @@ def main(operation="reference"):
         for file in tqdm(collected_files, total=len(collected_files)):
             image_filenames = os.path.basename(file)
             mask_files = file.replace("images", "gt_masks")
-            label_filenames = image_filenames.replace(".png", ".txt")
+            label_filenames = image_filenames.replace(".jpg", ".txt")
 
             shutil.copy(file, str(os.path.join(dst_imgs, image_filenames)))
             shutil.copy(mask_files, str(os.path.join(dst_masks, image_filenames)))
