@@ -6,7 +6,9 @@ import logging
 import os
 import re
 import pandas as pd
-import win32com.client
+from spire.doc import *	
+from spire.doc.common import *
+
 
 from glob import glob
 from fuzzysearch import find_near_matches
@@ -76,24 +78,12 @@ class PillFeatureExtraction:
         return [str(cell) for row in data.values for cell in row]
 
     def convert_doc_files_to_docx(self):
-        word = win32com.client.Dispatch("Word.Application")
-        word.visible = 0
-
-        for doc in self.doc_files:
-            wb = word.Documents.Open(doc)
-
-            file_name, _ = os.path.splitext(os.path.basename(doc))
-            out_file = os.path.join(self.docx_path, file_name + ".docx")
-
-            try:
-                wb.SaveAs2(out_file, FileFormat=16)
-                logging.info(f"{doc} converted to {file_name}.docx")
-            except Exception as e:
-                logging.info(f"Conversion failed for {doc}: {e}")
-
-            wb.Close()
-
-        word.Quit()
+        for file in self.doc_files:
+            document = Document()
+            document.LoadFromFile(file)
+            filename = os.path.basename(file).replace(".doc", ".docx")
+            document.SaveToFile(os.path.join(self.docx_path,filename), FileFormat.Docx2016)
+            document.Close()
 
     @staticmethod
     def find_regex_with_fuzzy(reference_list, text, max_l_dist=2):
@@ -195,7 +185,7 @@ class PillFeatureExtraction:
 
     def main(self):
         reference_name_list = self.get_ref_name_list()
-        # self.convert_doc_files_to_docx()
+        self.convert_doc_files_to_docx()
         docx_files = sorted(glob(os.path.join(nlp_configs().get("patient_information_leaflet_docx"), "*")))
 
         for i, docx in tqdm(enumerate(docx_files), total=len(docx_files), desc="Processing files"):
