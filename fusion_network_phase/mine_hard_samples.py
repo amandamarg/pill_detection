@@ -15,7 +15,7 @@ from typing import List, Tuple
 
 from config.json_config import json_config_selector
 from config.networks_paths_selector import stream_network_backbone_paths,  substream_paths
-from utils.utils import find_latest_file_in_latest_directory, setup_logger, mine_hard_triplets, load_config_json
+from utils.utils import find_latest_file_in_latest_directory, setup_logger, mine_hard_triplets, load_config_json, find_latest_subdir
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -96,34 +96,48 @@ def get_hardest_samples():
             )
         )
 
-    latest_hard_samples_contour = (
-        find_latest_file_in_latest_directory(
-            path=hard_sample_paths.get("hard_sample").get(loss_type).get("Contour")
+    hard_samples_contour = (
+        find_latest_subdir(
+            directory=hard_sample_paths.get("hard_sample").get(loss_type).get("Contour")
         )
     )
 
-    latest_hard_samples_lbp = (
-        find_latest_file_in_latest_directory(
-            path=hard_sample_paths.get("hard_sample").get(loss_type).get("LBP")
+    hard_samples_lbp = (
+        find_latest_subdir(
+            directory=hard_sample_paths.get("hard_sample").get(loss_type).get("LBP")
         )
     )
 
-    latest_hard_samples_rgb = (
-        find_latest_file_in_latest_directory(
-            path=hard_sample_paths.get("hard_sample").get(loss_type).get("RGB")
+    hard_samples_rgb = (
+        find_latest_subdir(
+            directory=hard_sample_paths.get("hard_sample").get(loss_type).get("RGB")
         )
     )
 
-    latest_hard_samples_texture = (
-        find_latest_file_in_latest_directory(
-            path=hard_sample_paths.get("hard_sample").get(loss_type).get("Texture")
+    hard_samples_texture = (
+        find_latest_subdir(
+            directory=hard_sample_paths.get("hard_sample").get(loss_type).get("Texture")
         )
     )
 
-    hardest_contour_triplets = mine_hard_triplets(latest_hard_samples_contour)
-    hardest_lpb_triplets = mine_hard_triplets(latest_hard_samples_lbp)
-    hardest_rgb_triplets = mine_hard_triplets(latest_hard_samples_rgb)
-    hardest_texture_triplets = mine_hard_triplets(latest_hard_samples_texture)
+    contour_epoch = os.path.basename(
+        find_latest_file_in_latest_directory(substream_paths().get("Contour").get(dataset_type).get(network_type).get("model_weights_dir").get(loss_type)).replace(".pt", ".txt")
+    )
+    lbp_epoch = os.path.basename(
+        find_latest_file_in_latest_directory(substream_paths().get("LBP").get(dataset_type).get(network_type).get("model_weights_dir").get(loss_type)).replace(".pt", ".txt")
+    )
+    rgb_epoch = os.path.basename(
+        find_latest_file_in_latest_directory(substream_paths().get("RGB").get(dataset_type).get(network_type).get("model_weights_dir").get(loss_type)).replace(".pt", ".txt")
+    )
+    texture_epoch = os.path.basename(
+        find_latest_file_in_latest_directory(substream_paths().get("Texture").get(dataset_type).get(network_type).get("model_weights_dir").get(loss_type)).replace(".pt", ".txt")
+    )
+
+
+    hardest_contour_triplets = mine_hard_triplets(os.path.join(hard_samples_contour, os.path.basename(hard_samples_contour) + "_" + contour_epoch))
+    hardest_lpb_triplets = mine_hard_triplets(os.path.join(hard_samples_lbp, os.path.basename(hard_samples_lbp) + "_" + lbp_epoch))
+    hardest_rgb_triplets = mine_hard_triplets(os.path.join(hard_samples_rgb, os.path.basename(hard_samples_rgb) + "_" + rgb_epoch))
+    hardest_texture_triplets = mine_hard_triplets(os.path.join(hard_samples_texture, os.path.basename(hard_samples_texture) + "_" + texture_epoch))
 
     common_triplets = find_union_triplets(hardest_contour_triplets, hardest_lpb_triplets,
                                           hardest_rgb_triplets, hardest_texture_triplets)

@@ -430,7 +430,9 @@ def process_txt(txt_file: str) -> list:
     paths = []
 
     with open(txt_file, 'r') as f:
-        data = eval(f.read())
+        r = f.read()
+        # data = eval(f.read())
+        data = eval(r)
 
     for key in data:
         paths.append(key)
