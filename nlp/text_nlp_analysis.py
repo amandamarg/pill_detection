@@ -269,7 +269,7 @@ class TextNLPAnalysis:
         kmeans_model = KMeans(n_clusters=num_clusters, random_state=random_seed, n_init=10)
         kmeans_model.fit(vectors)
 
-        tsne_model = TSNE(perplexity=25, n_components=2, init='pca', n_iter=5000, random_state=random_seed)
+        tsne_model = TSNE(perplexity=25, n_components=2, init='pca', max_iter=5000, random_state=random_seed)
         new_values = tsne_model.fit_transform(vectors)
 
         self.create_matrix(list_of_labels, new_values)

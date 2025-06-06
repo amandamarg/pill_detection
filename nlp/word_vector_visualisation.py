@@ -64,7 +64,7 @@ class WordVectorVisualisation:
         tsne_model = TSNE(perplexity=25,
                           n_components=2,
                           init='pca',
-                          n_iter=5000,
+                          max_iter=5000,
                           random_state=random_seed)
         new_values = tsne_model.fit_transform(vectors)
 
