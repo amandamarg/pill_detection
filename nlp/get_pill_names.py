@@ -4,10 +4,9 @@ from config.nlp_paths_selector import nlp_configs
 
 
 def main():
-    leaflet_files = pd.Series(os.listdir(nlp_configs().get("patient_information_leaflet_doc")))
-    pill_names = leaflet_files.map(lambda x: x.replace('_', ' ').split('.')[0]).sort_values()
+    full_sentences = pd.read_csv(nlp_configs().get("full_sentence_csv") + "/extracted_sentences.csv", header=None)
     path = nlp_configs().get('pill_names') + '/pill_names.xlsx'
-    pill_names.to_excel(path, index=None, header=None)
+    full_sentences[0].to_excel(excel_writer=path, index=None, header=None)
 
 if __name__ == "__main__":
     main()
