@@ -119,7 +119,7 @@ class PillFeatureExtraction:
 
     @staticmethod
     def extract_with_fuzzy_wuzzy(reference_list, string_to_match, min_ratio=80, limit=None):
-        special_strings = ['', '–', '×', '			', '/']
+        special_strings = ['', '–', '×', '			', '/', ',', '               ']
 
         if string_to_match in special_strings:
             return []
