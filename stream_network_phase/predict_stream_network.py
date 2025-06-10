@@ -177,10 +177,10 @@ class PredictStreamNetwork:
         network_rgb = StreamNetworkFactory.create_network(self.network_type, rgb_substream_network_cfg)
         network_tex = StreamNetworkFactory.create_network(self.network_type, texture_substream_network_cfg)
 
-        network_con.load_state_dict(torch.load(latest_con_pt_file))
-        network_lbp.load_state_dict(torch.load(latest_lbp_pt_file))
-        network_rgb.load_state_dict(torch.load(latest_rgb_pt_file))
-        network_tex.load_state_dict(torch.load(latest_tex_pt_file))
+        network_con.load_state_dict(torch.load(latest_con_pt_file, map_location=self.device))
+        network_lbp.load_state_dict(torch.load(latest_lbp_pt_file, map_location=self.device))
+        network_rgb.load_state_dict(torch.load(latest_rgb_pt_file, map_location=self.device))
+        network_tex.load_state_dict(torch.load(latest_tex_pt_file, map_location=self.device))
 
         return (
             network_con,
