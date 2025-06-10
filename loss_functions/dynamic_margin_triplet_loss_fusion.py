@@ -10,7 +10,6 @@ Description: This code implements the dynamic margin triplet loss in the fusion 
 import torch
 import torch.nn as nn
 import torch.nn.functional as functional
-
 from typing import List
 
 
@@ -108,7 +107,7 @@ class DynamicMarginTripletLoss(nn.Module):
 
         file_names = []
         for line in lines:
-            file_name = line.split("\\")[2]
+            file_name = line.split('/')[-2]
             file_names.append(file_name)
 
         return file_names
