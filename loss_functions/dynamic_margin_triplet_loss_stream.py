@@ -86,7 +86,10 @@ class DynamicMarginTripletLoss(BaseMetricLossFunction):
 
         normalized_margins = self.get_normalized_value(anchor_idx, negative_idx, labels)
         normalized_margins = self.margin * normalized_margins
-        normalized_margins = normalized_margins.to("cuda")
+        if torch.cuda.is_available():
+            normalized_margins = normalized_margins.to("cuda")
+        else:
+            normalized_margins = normalized_margins.to("cpu")
 
         pos_neg_dists = self.distance.margin(ap_dists, an_dists)
 

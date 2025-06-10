@@ -75,10 +75,16 @@ class EfficientNetV2MultiHeadAttention(nn.Module):
         self.network_rgb = StreamNetworkFactory.create_network(self.network_type, rgb_substream_network_cfg)
         self.network_tex = StreamNetworkFactory.create_network(self.network_type, texture_substream_network_cfg)
 
-        self.network_con.load_state_dict(torch.load(latest_con_pt_file))
-        self.network_lbp.load_state_dict(torch.load(latest_lbp_pt_file))
-        self.network_rgb.load_state_dict(torch.load(latest_rgb_pt_file))
-        self.network_tex.load_state_dict(torch.load(latest_tex_pt_file))
+        if torch.cuda.is_available():
+            self.network_con.load_state_dict(torch.load(latest_con_pt_file))
+            self.network_lbp.load_state_dict(torch.load(latest_lbp_pt_file))
+            self.network_rgb.load_state_dict(torch.load(latest_rgb_pt_file))
+            self.network_tex.load_state_dict(torch.load(latest_tex_pt_file))
+        else:
+            self.network_con.load_state_dict(torch.load(latest_con_pt_file, map_location='cpu'))
+            self.network_lbp.load_state_dict(torch.load(latest_lbp_pt_file, map_location='cpu'))
+            self.network_rgb.load_state_dict(torch.load(latest_rgb_pt_file, map_location='cpu'))
+            self.network_tex.load_state_dict(torch.load(latest_tex_pt_file, map_location='cpu'))
 
         self.freeze_networks(self.network_con)
         self.freeze_networks(self.network_lbp)
