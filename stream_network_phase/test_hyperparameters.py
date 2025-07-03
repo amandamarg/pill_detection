@@ -19,10 +19,12 @@ from stream_network_models.stream_network_selector import StreamNetworkFactory
 from loss_functions.dynamic_margin_triplet_loss_stream import DynamicMarginTripletLoss
 from dataloader_stream_network import DataLoaderStreamNet
 from utils.utils import (create_dataset, create_timestamp, get_embedded_text_matrix, measure_execution_time,
-                         use_gpu_if_available, setup_logger, load_config_json)
+                         use_gpu_if_available, setup_logger, load_config_json, find_latest_file_in_latest_directory)
 from train_stream_network import TrainModel
 from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import DataLoader, Subset
+from train_stream_network import PredictStreamNetwork
+
 
 
 
@@ -75,7 +77,7 @@ class ExpirimentModel(TrainModel):
 
         self.valid_data_loader = valid_data_loader
 
-# Set up loss and mining functions
+        # Set up loss and mining functions
         if loss_type == "dmtl":
             path_to_excel_file = nlp_configs().get("vector_distances")
             df = get_embedded_text_matrix(path_to_excel_file)
@@ -168,8 +170,6 @@ class ExpirimentModel(TrainModel):
         return directory_to_create
 
 
-
-
 class Estimator:
     def __init__(self, epochs, batch_size, weight_decay, step_size, learning_rate, gamma, margin, mining_type, upper_norm_limit=None):
         self.cfg = (
@@ -188,26 +188,6 @@ class Estimator:
         self.margin = margin
         self.mining_type = mining_type
         self.upper_norm_limit = upper_norm_limit
-
-        self.datasets = {}
-
-        for stream_type in ["Contour", "LBP", "RGB", "Texture"]:
-
-            # Create dataset
-            dataset_dirs_anchor = (
-                substream_paths().get(stream_type).get(self.dataset_type).get(self.type_of_net).get("train").get("anchor")
-            )
-            dataset_dir_pos_neg = (
-                substream_paths().get(stream_type).get(self.dataset_type).get(self.type_of_net).get("train").get("pos_neg")
-            )
-            
-            dataset = \
-                DataLoaderStreamNet(
-                    dataset_dirs_anchor=[dataset_dirs_anchor],
-                    dataset_dirs_pos_neg=[dataset_dir_pos_neg]
-                )
-            
-            self.datasets[stream_type] = dataset
             
 
     def fit(self, X, y=None):
@@ -217,22 +197,11 @@ class Estimator:
 
         for stream_type in ["Contour", "LBP", "RGB", "Texture"]:
             self.cfg["type_of_stream"] = stream_type
-            dataset = self.datasets[stream_type]
-            mapping = dataset.reference_encoding_map
-            indicies = [dataset.reference_labels.index(label) for label in X]
-            train_data_loader, valid_data_loader = (
-                create_dataset(
-                    dataset=Subset(dataset, indicies),
-                    train_valid_ratio=self.cfg.get("train_valid_ratio"),
-                    batch_size=self.cfg.get("batch_size")
-                )
-            )
-            
-            model = ExpirimentModel(self.cfg, mapping, train_data_loader, valid_data_loader)
+        
             try:
-                tm = model()
+                em = ExpirimentModel(self.cfg, mapping, train_data_loader, valid_data_loader)
                 try:
-                    model.training()
+                    em.training()
                 except torch.cuda.OutOfMemoryError:
                     logging.error('Detected OutOfMemoryError!')
                     torch.cuda.empty_cache()
@@ -244,4 +213,18 @@ class Estimator:
 
 
     def predict(self, X):
-        None
+        dataset_type = self.cfg.get(dataset_type)
+        network_type = self.cfg.get(network_type)
+        loss_type = self.cfg.get("type_of_loss_func")
+
+        #load networks
+        for stream_type in ["Contour", "LBP", "RGB", "Texture"]:
+            self.cfg["type_of_stream"] = stream_type
+            weight_file_path = substream_paths().get(stream_type).get(dataset_type).get(network_type).get("model_weights_dir").get(loss_type)
+            latest_pt_file = find_latest_file_in_latest_directory(
+                path=weight_file_path
+            )
+            network = StreamNetworkFactory.create_network(network_type, self.cfg)
+
+
+
